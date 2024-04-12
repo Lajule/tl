@@ -24,19 +24,19 @@ weeks() {
 
 humanize() {
 	local -i weeks
-	weeks="$(( $1 / 604800 ))"
+	weeks=$(( $1 / 604800 ))
 
 	local -i days
-	days="$(( ($1 / 86400) - (($1 / 604800) * 7) ))"
+	days=$(( ($1 / 86400) - (($1 / 604800) * 7) ))
 
 	local -i hours
-	hours="$(( ($1 / 3600) - (($1 / 86400) * 24) ))"
+	hours=$(( ($1 / 3600) - (($1 / 86400) * 24) ))
 
 	local -i minutes
-	minutes="$(( ($1 / 60) - (($1 / 3600) * 60) ))"
+	minutes=$(( ($1 / 60) - (($1 / 3600) * 60) ))
 
 	local -i seconds
-	seconds="$(( $1 - (($1 / 60) * 60) ))"
+	seconds=$(( $1 - (($1 / 60) * 60) ))
 
 	printf '%dw %dd %dh %dm %ds\n' ${weeks} ${days} ${hours} ${minutes} ${seconds}
 }
