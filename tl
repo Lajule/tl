@@ -21,7 +21,6 @@ weeks() {
 	bc -l <<< "scale=2; $1 / 604800"
 }
 
-
 humanize() {
 	local -i weeks
 	weeks=$(( $1 / 604800 ))
@@ -38,23 +37,34 @@ humanize() {
 	local -i seconds
 	seconds=$(( $1 - (($1 / 60) * 60) ))
 
-	printf '%dw %dd %dh %dm %ds\n' ${weeks} ${days} ${hours} ${minutes} ${seconds}
+	if (( weeks > 0 )); then
+		printf '%dw %dd %dh %dm %ds\n' ${weeks} ${days} ${hours} ${minutes} ${seconds}
+	elif (( days > 0 )); then
+		printf '%dd %dh %dm %ds\n' ${days} ${hours} ${minutes} ${seconds}
+	elif (( hours > 0 )); then
+		printf '%dh %dm %ds\n' ${hours} ${minutes} ${seconds}
+	elif (( minutes > 0 )); then
+		printf '%dm %ds\n' ${minutes} ${seconds}
+	else
+		printf '%ds\n' ${seconds}
+	fi
 }
 
 declare -A logs
 
-readonly now="$(date +%s)"
-
 readarray -t lines <data
+
+previous="$(date +%s)"
 
 for (( i=0; i<${#lines[@]}; i++ )); do
 	IFS=' ' read -r label timestamp <<< "${lines[$i]}"
 
-	if (( i == 0 )); then
-		logs[${label}]=$(( now - timestamp ))
-	else
+	value=${logs[${label}]}
+	if [[ -n ${value} ]]; then
+		logs[${label}]=$(( value + previous - timestamp ))
+  else
 		logs[${label}]=$(( previous - timestamp ))
-  fi
+	fi
 
 	previous=${timestamp}
 done
@@ -63,3 +73,4 @@ for label in "${!logs[@]}"; do
 	printf '%s\t%s\n' "${label}" "$(humanize "${logs[${label}]}")"
 done
 
+printf '%s %d\n%s' "$1" "$(date +%s)" "$(cat data)" >data
