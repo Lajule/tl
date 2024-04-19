@@ -64,40 +64,25 @@ for (( i=0; i<${#lines[@]}; i++ )); do
 	old=${logs[${label}]}
 	if [[ -n ${old} ]]; then
 		logs[${label}]=$(( old + value ))
-  else
+	else
 		logs[${label}]=$(( value ))
 	fi
 
 	previous=${timestamp}
 done
 
-while getopts ':smhwH' opt; do
-  case ${opt} in
-    s)
-			for label in "${!logs[@]}"; do
-				printf '%s\t%s\n' "${label}" "$(seconds "${logs[${label}]}")"
-			done
-			;;
-    m)
-			for label in "${!logs[@]}"; do
-				printf '%s\t%s\n' "${label}" "$(minutes "${logs[${label}]}")"
-			done
-			;;
-    h)
-			for label in "${!logs[@]}"; do
-				printf '%s\t%s\n' "${label}" "$(hours "${logs[${label}]}")"
-			done
-			;;
-    w)
-			for label in "${!logs[@]}"; do
-				printf '%s\t%s\n' "${label}" "$(weeks "${logs[${label}]}")"
-			done
-			;;
-    H)
-			for label in "${!logs[@]}"; do
-				printf '%s\t%s\n' "${label}" "$(humanize "${logs[${label}]}")"
-			done
-			;;
+silent=0
+f='humanize'
+
+while getopts ':sSmhdwH' opt; do
+	case ${opt} in
+    s) silent=1;;
+    S) f='seconds';;
+    m) f='minutes';;
+    h) f='hours';;
+    d) f='days';;
+    w) f='weeks';;
+    H) f='humanize';;
     ?)
       echo "Invalid option: -${OPTARG}."
       exit 1
@@ -106,6 +91,12 @@ while getopts ':smhwH' opt; do
 done
 
 shift $((OPTIND-1))
+
+if (( silent == 0 )); then
+	for label in "${!logs[@]}"; do
+		printf '%s\t%s\n' "${label}" "$($f "${logs[${label}]}")"
+	done
+fi
 
 if (( $# > 0 )); then
 	printf '%s %d\n%s' "$1" "$(date +%s)" "$(cat data)" >data
