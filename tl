@@ -59,18 +59,54 @@ previous="$(date +%s)"
 for (( i=0; i<${#lines[@]}; i++ )); do
 	IFS=' ' read -r label timestamp <<< "${lines[$i]}"
 
-	value=${logs[${label}]}
-	if [[ -n ${value} ]]; then
-		logs[${label}]=$(( value + previous - timestamp ))
+	value=$(( previous - timestamp ))
+
+	old=${logs[${label}]}
+	if [[ -n ${old} ]]; then
+		logs[${label}]=$(( old + value ))
   else
-		logs[${label}]=$(( previous - timestamp ))
+		logs[${label}]=$(( value ))
 	fi
 
 	previous=${timestamp}
 done
 
-for label in "${!logs[@]}"; do
-	printf '%s\t%s\n' "${label}" "$(humanize "${logs[${label}]}")"
+while getopts ':smhwH' opt; do
+  case ${opt} in
+    s)
+			for label in "${!logs[@]}"; do
+				printf '%s\t%s\n' "${label}" "$(seconds "${logs[${label}]}")"
+			done
+			;;
+    m)
+			for label in "${!logs[@]}"; do
+				printf '%s\t%s\n' "${label}" "$(minutes "${logs[${label}]}")"
+			done
+			;;
+    h)
+			for label in "${!logs[@]}"; do
+				printf '%s\t%s\n' "${label}" "$(hours "${logs[${label}]}")"
+			done
+			;;
+    w)
+			for label in "${!logs[@]}"; do
+				printf '%s\t%s\n' "${label}" "$(weeks "${logs[${label}]}")"
+			done
+			;;
+    H)
+			for label in "${!logs[@]}"; do
+				printf '%s\t%s\n' "${label}" "$(humanize "${logs[${label}]}")"
+			done
+			;;
+    ?)
+      echo "Invalid option: -${OPTARG}."
+      exit 1
+      ;;
+  esac
 done
 
-printf '%s %d\n%s' "$1" "$(date +%s)" "$(cat data)" >data
+shift $((OPTIND-1))
+
+if (( $# > 0 )); then
+	printf '%s %d\n%s' "$1" "$(date +%s)" "$(cat data)" >data
+fi
