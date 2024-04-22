@@ -22,11 +22,11 @@ weeks() {
 }
 
 humanize() {
-	let "weeks=$1 / 604800"
-	let "days=($1 / 86400) - (($1 / 604800) * 7)"
-	let "hours=($1 / 3600) - (($1 / 86400) * 24)"
-	let "minutes=($1 / 60) - (($1 / 3600) * 60)"
-	let "seconds=$1 - (($1 / 60) * 60)"
+	weeks=$(( $1 / 604800 ))
+	days=$(( ($1 / 86400) - (($1 / 604800) * 7) ))
+	hours=$(( ($1 / 3600) - (($1 / 86400) * 24) ))
+	minutes=$(( ($1 / 60) - (($1 / 3600) * 60) ))
+	seconds=$(( $1 - (($1 / 60) * 60) ))
 
 	if (( weeks > 0 )); then
 		printf '%dw %dd %dh %dm %ds\n' ${weeks} ${days} ${hours} ${minutes} ${seconds}
@@ -41,6 +41,8 @@ humanize() {
 	fi
 }
 
+
+data="${TLFILE:-.tl}"
 silent=0
 func='humanize'
 
@@ -63,13 +65,17 @@ done
 shift $((OPTIND-1))
 
 if (( $# > 0 )); then
-	printf '%s %d\n%s' "$1" "$(date +%s)" "$(cat data)" >data
+	if [[ ! -f ${data} ]]; then
+		touch ${data}
+	fi
+
+	printf '%s %d\n%s' "$1" "$(date +%s)" "$(cat "${data}")" >"${data}"
 fi
 
-if (( silent == 0 )); then
+if [[ -f ${data} && ${silent} == 0 ]]; then
 	declare -A logs
 
-	readarray -t lines <data
+	readarray -t lines <"${data}"
 
 	previous="$(date +%s)"
 
