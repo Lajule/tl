@@ -22,20 +22,11 @@ weeks() {
 }
 
 humanize() {
-	local -i weeks
-	weeks=$(( $1 / 604800 ))
-
-	local -i days
-	days=$(( ($1 / 86400) - (($1 / 604800) * 7) ))
-
-	local -i hours
-	hours=$(( ($1 / 3600) - (($1 / 86400) * 24) ))
-
-	local -i minutes
-	minutes=$(( ($1 / 60) - (($1 / 3600) * 60) ))
-
-	local -i seconds
-	seconds=$(( $1 - (($1 / 60) * 60) ))
+	let "weeks=$1 / 604800"
+	let "days=($1 / 86400) - (($1 / 604800) * 7)"
+	let "hours=($1 / 3600) - (($1 / 86400) * 24)"
+	let "minutes=($1 / 60) - (($1 / 3600) * 60)"
+	let "seconds=$1 - (($1 / 60) * 60)"
 
 	if (( weeks > 0 )); then
 		printf '%dw %dd %dh %dm %ds\n' ${weeks} ${days} ${hours} ${minutes} ${seconds}
@@ -51,17 +42,17 @@ humanize() {
 }
 
 silent=0
-f='humanize'
+func='humanize'
 
 while getopts ':sSmhdwH' opt; do
 	case ${opt} in
     s) silent=1;;
-    S) f='seconds';;
-    m) f='minutes';;
-    h) f='hours';;
-    d) f='days';;
-    w) f='weeks';;
-    H) f='humanize';;
+    S) func='seconds';;
+    m) func='minutes';;
+    h) func='hours';;
+    d) func='days';;
+    w) func='weeks';;
+    H) func='humanize';;
     ?)
       echo "Invalid option: -${OPTARG}."
       exit 1
@@ -98,6 +89,6 @@ if (( silent == 0 )); then
 	done
 
 	for label in "${!logs[@]}"; do
-		printf '%s\t%s\n' "${label}" "$($f "${logs[${label}]}")"
+		printf '%s %s\n' "${label}" "$($func "${logs[${label}]}")"
 	done
 fi
