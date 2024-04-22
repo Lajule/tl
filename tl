@@ -28,7 +28,8 @@ humanize() {
 	minutes=$(( ($1 / 60) - (($1 / 3600) * 60) ))
 	seconds=$(( $1 - (($1 / 60) * 60) ))
 	if (( weeks > 0 )); then
-		printf '%dw %dd %dh %dm %ds\n' ${weeks} ${days} ${hours} ${minutes} ${seconds}
+		printf '%dw %dd %dh %dm %ds\n' ${weeks} ${days} ${hours} ${minutes} \
+					 ${seconds}
 	elif (( days > 0 )); then
 		printf '%dd %dh %dm %ds\n' ${days} ${hours} ${minutes} ${seconds}
 	elif (( hours > 0 )); then
