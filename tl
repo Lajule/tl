@@ -27,7 +27,6 @@ humanize() {
 	hours=$(( ($1 / 3600) - (($1 / 86400) * 24) ))
 	minutes=$(( ($1 / 60) - (($1 / 3600) * 60) ))
 	seconds=$(( $1 - (($1 / 60) * 60) ))
-
 	if (( weeks > 0 )); then
 		printf '%dw %dd %dh %dm %ds\n' ${weeks} ${days} ${hours} ${minutes} ${seconds}
 	elif (( days > 0 )); then
@@ -66,13 +65,13 @@ shift $((OPTIND-1))
 
 if (( $# > 0 )); then
 	if [[ ! -f ${data} ]]; then
-		touch ${data}
+		touch "${data}"
 	fi
 
 	printf '%s %d\n%s' "$1" "$(date +%s)" "$(cat "${data}")" >"${data}"
 fi
 
-if [[ -f ${data} && ${silent} == 0 ]]; then
+if [[ -f ${data} && ${silent} -eq 0 ]]; then
 	declare -A logs
 
 	readarray -t lines <"${data}"
