@@ -22,10 +22,15 @@ weeks() {
 }
 
 humanize() {
+	local -i weeks
 	weeks=$(( $1 / 604800 ))
+	local -i days
 	days=$(( ($1 / 86400) - (($1 / 604800) * 7) ))
+	local -i hours
 	hours=$(( ($1 / 3600) - (($1 / 86400) * 24) ))
+	local -i minutes
 	minutes=$(( ($1 / 60) - (($1 / 3600) * 60) ))
+	local -i seconds
 	seconds=$(( $1 - (($1 / 60) * 60) ))
 	if (( weeks > 0 )); then
 		printf '%dw %dd %dh %dm %ds\n' ${weeks} ${days} ${hours} ${minutes} \
@@ -41,14 +46,15 @@ humanize() {
 	fi
 }
 
-
 data="${TLFILE:-.tl}"
 silent=0
+reset=0
 func='humanize'
 
-while getopts ':sSmhdwH' opt; do
-	case ${opt} in
-    s) silent=1;;
+while getopts ':srSmhdwH' flag; do
+	case ${flag} in
+		s) silent=1;;
+		r) reset=1;;
     S) func='seconds';;
     m) func='minutes';;
     h) func='hours';;
@@ -64,7 +70,16 @@ done
 
 shift $((OPTIND-1))
 
+if (( reset == 1 )); then
+	rm -f "${data}"
+fi
+
 if (( $# > 0 )); then
+	if [[ ! $1 =~ ^[[:alnum:]]+$ ]]; then
+    echo "Invalid label: $1."
+    exit 1
+	fi
+
 	if [[ ! -f ${data} ]]; then
 		touch "${data}"
 	fi
