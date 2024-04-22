@@ -76,8 +76,8 @@ fi
 
 if (( $# > 0 )); then
 	if [[ ! $1 =~ ^[[:alnum:]]+$ ]]; then
-    echo "Invalid label: $1."
-    exit 1
+		echo "Invalid label: $1."
+		exit 1
 	fi
 
 	if [[ ! -f ${data} ]]; then
