@@ -50,27 +50,6 @@ humanize() {
 	fi
 }
 
-declare -A logs
-
-readarray -t lines <data
-
-previous="$(date +%s)"
-
-for (( i=0; i<${#lines[@]}; i++ )); do
-	IFS=' ' read -r label timestamp <<< "${lines[$i]}"
-
-	value=$(( previous - timestamp ))
-
-	old=${logs[${label}]}
-	if [[ -n ${old} ]]; then
-		logs[${label}]=$(( old + value ))
-	else
-		logs[${label}]=$(( value ))
-	fi
-
-	previous=${timestamp}
-done
-
 silent=0
 f='humanize'
 
@@ -92,12 +71,33 @@ done
 
 shift $((OPTIND-1))
 
+if (( $# > 0 )); then
+	printf '%s %d\n%s' "$1" "$(date +%s)" "$(cat data)" >data
+fi
+
 if (( silent == 0 )); then
+	declare -A logs
+
+	readarray -t lines <data
+
+	previous="$(date +%s)"
+
+	for (( i=0; i<${#lines[@]}; i++ )); do
+		IFS=' ' read -r label timestamp <<< "${lines[$i]}"
+
+		value=$(( previous - timestamp ))
+
+		old=${logs[${label}]}
+		if [[ -n ${old} ]]; then
+			logs[${label}]=$(( old + value ))
+		else
+			logs[${label}]=$(( value ))
+		fi
+
+		previous=${timestamp}
+	done
+
 	for label in "${!logs[@]}"; do
 		printf '%s\t%s\n' "${label}" "$($f "${logs[${label}]}")"
 	done
-fi
-
-if (( $# > 0 )); then
-	printf '%s %d\n%s' "$1" "$(date +%s)" "$(cat data)" >data
 fi
