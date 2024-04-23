@@ -52,20 +52,19 @@ reset=0
 func='humanize'
 
 while getopts ':srSmhdwH' flag; do
-	case ${flag} in
+	case "${flag}" in
 		s) silent=1;;
 		r) reset=1;;
-    S) func='seconds';;
-    m) func='minutes';;
-    h) func='hours';;
-    d) func='days';;
-    w) func='weeks';;
-    H) func='humanize';;
-    ?)
-      echo "Invalid option: -${OPTARG}."
-      exit 1
-      ;;
-  esac
+		S) func='seconds';;
+		m) func='minutes';;
+		h) func='hours';;
+		d) func='days';;
+		w) func='weeks';;
+		H) func='humanize';;
+		?)
+			echo "Invalid option: -${OPTARG}."
+			exit 1;;
+	esac
 done
 
 shift $((OPTIND-1))
@@ -75,38 +74,33 @@ if (( reset == 1 )); then
 fi
 
 if (( $# > 0 )); then
-	if [[ ! $1 =~ ^[[:alnum:]]+$ ]]; then
+	if [[ ! "$1" =~ ^[[:alnum:]]+$ ]]; then
 		echo "Invalid label: $1."
 		exit 1
 	fi
 
-	if [[ ! -f ${data} ]]; then
+	if [[ ! -f "${data}" ]]; then
 		touch "${data}"
 	fi
 
 	printf '%s %d\n%s' "$1" "$(date +%s)" "$(cat "${data}")" >"${data}"
 fi
 
-if [[ -f ${data} && ${silent} -eq 0 ]]; then
+if [[ -f "${data}" ]] && (( silent == 0 )); then
 	declare -A logs
-
 	readarray -t lines <"${data}"
-
 	previous="$(date +%s)"
 
 	for (( i=0; i<${#lines[@]}; i++ )); do
 		IFS=' ' read -r label timestamp <<< "${lines[$i]}"
-
 		value=$(( previous - timestamp ))
-
-		old=${logs[${label}]}
-		if [[ -n ${old} ]]; then
+		old="${logs[${label}]}"
+		if [[ -n "${old}" ]]; then
 			logs[${label}]=$(( old + value ))
 		else
 			logs[${label}]=$(( value ))
 		fi
-
-		previous=${timestamp}
+		previous="${timestamp}"
 	done
 
 	for label in "${!logs[@]}"; do
