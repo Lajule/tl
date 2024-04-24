@@ -52,7 +52,7 @@ humanize() {
 	fi
 }
 
-data_file="${TLFILE:-.tl}"
+tlfile="${TLFILE:-.tl}"
 silent=0
 reset=0
 render_function='humanize'
@@ -78,7 +78,7 @@ if ! hash bc >&/dev/null; then
 fi
 
 if (( reset == 1 )); then
-	rm -f "${data_file}"
+	rm -f "${tlfile}"
 fi
 
 if (( $# > 0 )); then
@@ -86,16 +86,16 @@ if (( $# > 0 )); then
 		abort "invalid label: $1."
 	fi
 
-	if [[ ! -f "${data_file}" ]]; then
-		touch "${data_file}"
+	if [[ ! -f "${tlfile}" ]]; then
+		touch "${tlfile}"
 	fi
 
-	printf '%s %d\n%s' "$1" "$(date +%s)" "$(cat "${data_file}")" >"${data_file}"
+	printf '%s %d\n%s' "$1" "$(date +%s)" "$(cat "${tlfile}")" >"${tlfile}"
 fi
 
-if [[ -f "${data_file}" ]] && (( silent == 0 )); then
+if [[ -f "${tlfile}" ]] && (( silent == 0 )); then
 	declare -A logs
-	readarray -t lines <"${data_file}"
+	readarray -t lines <"${tlfile}"
 	previous="$(date +%s)"
 
 	for (( i=0; i<${#lines[@]}; i++ )); do
