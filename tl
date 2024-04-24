@@ -28,16 +28,11 @@ weeks() {
 }
 
 humanize() {
-	local -i weeks
-	weeks=$(( $1 / 604800 ))
-	local -i days
-	days=$(( ($1 / 86400) - (($1 / 604800) * 7) ))
-	local -i hours
-	hours=$(( ($1 / 3600) - (($1 / 86400) * 24) ))
-	local -i minutes
-	minutes=$(( ($1 / 60) - (($1 / 3600) * 60) ))
-	local -i seconds
-	seconds=$(( $1 - (($1 / 60) * 60) ))
+	local -i weeks=$(( $1 / 604800 ))
+	local -i days=$(( ($1 / 86400) - (($1 / 604800) * 7) ))
+	local -i hours=$(( ($1 / 3600) - (($1 / 86400) * 24) ))
+	local -i minutes=$(( ($1 / 60) - (($1 / 3600) * 60) ))
+	local -i seconds=$(( $1 - (($1 / 60) * 60) ))
 	if (( weeks > 0 )); then
 		printf '%dw %dd %dh %dm %ds\n' ${weeks} ${days} ${hours} ${minutes} \
 			${seconds}
