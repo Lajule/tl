@@ -1,6 +1,12 @@
 #!/usr/bin/env bash
 # -*- mode: sh; tab-width: 2; -*-
 
+me="${0##*/}"
+abort() {
+	printf '%s: %s\n' "$me" "$*" >&2
+	exit 1
+}
+
 seconds() {
 	echo "$1"
 }
@@ -61,13 +67,15 @@ while getopts ':srSmhdwH' flag; do
 		d) func='days';;
 		w) func='weeks';;
 		H) func='humanize';;
-		?)
-			echo "Invalid option: -${OPTARG}."
-			exit 1;;
+		?) abort "invalid option: -${OPTARG}.";;
 	esac
 done
 
 shift $((OPTIND-1))
+
+if ! hash bc >&/dev/null; then
+	abort "bc could not be found, please install it to use this script."
+fi
 
 if (( reset == 1 )); then
 	rm -f "${data}"
@@ -75,8 +83,7 @@ fi
 
 if (( $# > 0 )); then
 	if [[ ! "$1" =~ ^[[:alnum:]]+$ ]]; then
-		echo "Invalid label: $1."
-		exit 1
+		abort "invalid label: $1."
 	fi
 
 	if [[ ! -f "${data}" ]]; then
