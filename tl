@@ -52,21 +52,21 @@ humanize() {
 	fi
 }
 
-data="${TLFILE:-.tl}"
+data_file="${TLFILE:-.tl}"
 silent=0
 reset=0
-func='humanize'
+render_function='humanize'
 
 while getopts ':srSmhdwH' flag; do
 	case "${flag}" in
 		s) silent=1;;
 		r) reset=1;;
-		S) func='seconds';;
-		m) func='minutes';;
-		h) func='hours';;
-		d) func='days';;
-		w) func='weeks';;
-		H) func='humanize';;
+		S) render_function='seconds';;
+		m) render_function='minutes';;
+		h) render_function='hours';;
+		d) render_function='days';;
+		w) render_function='weeks';;
+		H) render_function='humanize';;
 		?) abort "invalid option: -${OPTARG}.";;
 	esac
 done
@@ -78,7 +78,7 @@ if ! hash bc >&/dev/null; then
 fi
 
 if (( reset == 1 )); then
-	rm -f "${data}"
+	rm -f "${data_file}"
 fi
 
 if (( $# > 0 )); then
@@ -86,16 +86,16 @@ if (( $# > 0 )); then
 		abort "invalid label: $1."
 	fi
 
-	if [[ ! -f "${data}" ]]; then
-		touch "${data}"
+	if [[ ! -f "${data_file}" ]]; then
+		touch "${data_file}"
 	fi
 
-	printf '%s %d\n%s' "$1" "$(date +%s)" "$(cat "${data}")" >"${data}"
+	printf '%s %d\n%s' "$1" "$(date +%s)" "$(cat "${data_file}")" >"${data_file}"
 fi
 
-if [[ -f "${data}" ]] && (( silent == 0 )); then
+if [[ -f "${data_file}" ]] && (( silent == 0 )); then
 	declare -A logs
-	readarray -t lines <"${data}"
+	readarray -t lines <"${data_file}"
 	previous="$(date +%s)"
 
 	for (( i=0; i<${#lines[@]}; i++ )); do
@@ -111,6 +111,6 @@ if [[ -f "${data}" ]] && (( silent == 0 )); then
 	done
 
 	for label in "${!logs[@]}"; do
-		printf '%s %s\n' "${label}" "$($func "${logs[${label}]}")"
+		printf '%s %s\n' "${label}" "$($render_function "${logs[${label}]}")"
 	done
 fi
