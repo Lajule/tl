@@ -69,7 +69,7 @@ done
 shift $((OPTIND-1))
 
 if ! hash bc >&/dev/null; then
-	abort "bc could not be found, please install it to use this script."
+	abort 'bc could not be found, please install it to use this script.'
 fi
 
 if (( reset == 1 )); then
