@@ -85,7 +85,7 @@ if (( $# > 0 )); then
 		touch "${tlfile}"
 	fi
 
-	printf '%s %d\n%s' "$1" "$(date +%s)" "$(cat "${tlfile}")" >"${tlfile}"
+	printf '%s %d\n%s' "$1" "$(date +%s)" "$(<"${tlfile}")" >"${tlfile}"
 fi
 
 if [[ -f "${tlfile}" ]] && (( silent == 0 )); then
