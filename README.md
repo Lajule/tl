@@ -42,4 +42,4 @@ Options:
 
 Labels are used to log time for different tasks. Each label should consist of alphanumeric characters only. Non-alphanumeric labels will result in an error.
 
-The script stores its data in a file named .tl by default. You can change the data file by setting the TLFILE environment variable to your preferred file path.
+The script stores its data in a file named ~/.tl by default. You can change the data file by setting the TLFILE environment variable to your preferred file path.

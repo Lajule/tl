@@ -47,7 +47,7 @@ humanize() {
 	fi
 }
 
-tlfile="${TLFILE:-.tl}"
+tlfile="${TLFILE:-~/.tl}"
 silent=0
 reset=0
 render_function='humanize'
