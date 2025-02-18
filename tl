@@ -3,7 +3,7 @@
 
 me="${0##*/}"
 abort() {
-	printf '%s: %s\n' "$me" "$*" >&2
+	printf '%s: %s\n' "${me}" "$*" >&2
 	exit 1
 }
 
