@@ -7,24 +7,30 @@ abort() {
 	exit 1
 }
 
+div() {
+  local script
+	script='import sys; print(f"{float(sys.argv[1]) / float(sys.argv[2]):.2f}")'
+	python3 -c "${script}" "$1" "$2"
+}
+
 seconds() {
 	echo "$1"
 }
 
 minutes() {
-	bc -l <<< "scale=2; $1 / 60"
+	div "$1" 60
 }
 
 hours() {
-	bc -l <<< "scale=2; $1 / 3600"
+	div "$1" 3600
 }
 
 days() {
-	bc -l <<< "scale=2; $1 / 86400"
+	div "$1" 86400
 }
 
 weeks() {
-	bc -l <<< "scale=2; $1 / 604800"
+	div "$1" 604800
 }
 
 humanize() {
@@ -67,10 +73,6 @@ while getopts ':srSmhdwH' flag; do
 done
 
 shift $((OPTIND-1))
-
-if ! hash bc >&/dev/null; then
-	abort 'bc could not be found, please install it to use this script.'
-fi
 
 if (( reset == 1 )); then
 	rm -f "${tlfile}"
