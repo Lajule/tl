@@ -12,7 +12,7 @@ This shell script provides a simple command-line utility to log and convert time
 ## Requirements
 
 - Bash
-- `bc` (for basic calculations)
+- `python` (for basic calculations)
 
 ## Installation
 
